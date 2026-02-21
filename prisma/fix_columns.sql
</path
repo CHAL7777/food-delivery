@@ -1,0 +1,9 @@
+-- Run this SQL to add the missing is_popular column to the foods table
+-- This is needed because the database schema is out of sync with Prisma schema
+
+ALTER TABLE foods ADD COLUMN IF NOT EXISTS is_popular BOOLEAN DEFAULT false;
+
+-- Also add other columns that might be missing if they weren't synced properly
+ALTER TABLE foods ADD COLUMN IF NOT EXISTS is_spicy BOOLEAN DEFAULT false;
+ALTER TABLE foods ADD COLUMN IF NOT EXISTS is_featured BOOLEAN DEFAULT false;
+ALTER TABLE foods ADD COLUMN IF NOT EXISTS is_available BOOLEAN DEFAULT true;

@@ -1,0 +1,1 @@
+export default function EditFood(){ return <div>Edit Food</div> }

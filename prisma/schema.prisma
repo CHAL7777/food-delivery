@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  phone     String?
+  role      String   @default("user")
+  avatar    String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  addresses Address[]
+  orders    Order[]
+  reviews   Review[]
+
+  @@map("profiles")
+}
+
+model Category {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String   @unique
+  description String?
+  image       String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  foods Food[]
+
+  @@map("categories")
+}
+
+model Food {
+  id               String     @id @default(uuid()) @db.Uuid
+  name             String
+  description      String?
+  price            Decimal    @db.Decimal(10, 2)
+  categoryId       String?    @map("category_id") @db.Uuid
+  image            String?
+  images           String[]
+  ingredients      String[]
+  isAvailable      Boolean    @default(true) @map("is_available")
+  isFeatured       Boolean    @default(false) @map("is_featured")
+  isPopular        Boolean    @default(false) @map("is_popular")
+  isSpicy          Boolean    @default(false) @map("is_spicy")
+  preparationTime  Int?       @map("preparation_time")
+  rating           Decimal?   @default(0) @db.Decimal(3, 2)
+  totalReviews     Int?       @default(0) @map("total_reviews")
+  createdAt        DateTime   @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt        DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  category Category? @relation(fields: [categoryId], references: [id])
+  reviews  Review[]
+
+  @@map("foods")
+}
+
+model Address {
+  id          String  @id @default(uuid()) @db.Uuid
+  userId      String  @map("user_id") @db.Uuid
+  type        String
+  street      String
+  city        String
+  state       String
+  zipCode     String? @map("zip_code")
+  isDefault   Boolean @default(false) @map("is_default")
+  instructions String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  user Profile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+model Order {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  items           Json
+  subtotal        Decimal  @db.Decimal(10, 2)
+  deliveryFee     Decimal  @db.Decimal(10, 2)
+  total           Decimal  @db.Decimal(10, 2)
+  status          String   @default("pending")
+  paymentStatus   String   @default("pending") @map("payment_status")
+  paymentMethod   String?  @map("payment_method")
+  deliveryAddress Json     @map("delivery_address")
+  transactionRef  String?  @map("transaction_ref")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  user   Profile  @relation(fields: [userId], references: [id])
+  reviews Review[]
+
+  @@map("orders")
+}
+
+model Review {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  foodId    String   @map("food_id") @db.Uuid
+  orderId   String   @map("order_id") @db.Uuid
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  user  Profile @relation(fields: [userId], references: [id])
+  food  Food    @relation(fields: [foodId], references: [id])
+  order Order   @relation(fields: [orderId], references: [id])
+
+  @@unique([userId, foodId, orderId])
+  @@map("reviews")
+}
