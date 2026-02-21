@@ -345,19 +345,40 @@ CREATE TRIGGER ensure_single_default_address
   EXECUTE FUNCTION ensure_single_default_address();
 
 -- Function to handle new user creation
+-- SECURITY DEFINER is required so signup does not fail under RLS.
 CREATE OR REPLACE FUNCTION handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
-  INSERT INTO profiles (id, email, role)
+  INSERT INTO public.profiles (id, email, first_name, last_name, phone, role)
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'role', 'user')
-  );
+    COALESCE(NEW.raw_user_meta_data->>'first_name', NEW.raw_user_meta_data->>'firstName'),
+    COALESCE(NEW.raw_user_meta_data->>'last_name', NEW.raw_user_meta_data->>'lastName'),
+    NEW.raw_user_meta_data->>'phone',
+    CASE
+      WHEN NEW.raw_user_meta_data->>'role' IN ('user', 'admin') THEN NEW.raw_user_meta_data->>'role'
+      ELSE 'user'
+    END
+  )
+  ON CONFLICT (id) DO UPDATE
+  SET
+    email = EXCLUDED.email,
+    first_name = COALESCE(EXCLUDED.first_name, public.profiles.first_name),
+    last_name = COALESCE(EXCLUDED.last_name, public.profiles.last_name),
+    phone = COALESCE(EXCLUDED.phone, public.profiles.phone),
+    role = COALESCE(EXCLUDED.role, public.profiles.role);
+
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
+GRANT EXECUTE ON FUNCTION handle_new_user() TO supabase_auth_admin;
 
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW
