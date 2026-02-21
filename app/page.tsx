@@ -1,125 +1,107 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import FoodList from '@/components/food/FoodList'
-import { ArrowRight, Truck, Star, Clock, Shield, Utensils } from 'lucide-react'
+import { ArrowRight, Truck, Star, Clock, ShieldCheck, Utensils, Sparkles, HandPlatter } from 'lucide-react'
 
 export default function HomePage() {
   return (
-    <div className="space-y-16">
+    <div className="space-y-20">
       {/* Hero Section */}
-      <section className="relative min-h-[600px] flex items-center overflow-hidden">
+      <section className="relative overflow-hidden rounded-[2rem] bg-pattern px-6 py-12 md:px-10 md:py-16 lg:px-14">
         {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-red-50" />
-        <div className="absolute top-20 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-orange-200/50 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-red-100/50 to-transparent rounded-full blur-3xl" />
-        
-        {/* Pattern overlay */}
-        <div className="absolute inset-0 bg-pattern opacity-50" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-orange-100/55 via-white to-rose-100/45" />
+        <div className="absolute -left-24 bottom-0 h-72 w-72 rounded-full bg-orange-300/30 blur-3xl" />
+        <div className="absolute -right-16 top-0 h-72 w-72 rounded-full bg-rose-300/30 blur-3xl" />
 
-        <div className="container mx-auto px-4 relative z-10 py-12">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Content */}
-            <div className="space-y-8 animate-fade-in-up">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-sm">
-                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-sm font-medium text-gray-700">Now delivering in Addis Ababa</span>
-              </div>
-              
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight">
-                Fresh meals, <br />
-                <span className="text-gradient">fast delivery</span> <br />
-                right to your door
-              </h1>
-              
-              <p className="text-lg md:text-xl text-gray-600 max-w-lg">
-                Hand-picked dishes from local chefs. Browse the menu, order in a few taps, and enjoy warm, delicious food delivered quickly.
-              </p>
-              
-              <div className="flex flex-wrap gap-4">
-                <Link href="/menu">
-                  <Button size="xl" className="bg-gradient-primary hover:shadow-glow-lg text-white px-8">
-                    Order Now
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                </Link>
-                <Link href="/menu">
-                  <Button size="xl" variant="outline" className="border-2">
-                    Explore Menu
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Stats */}
-              <div className="flex flex-wrap gap-8 pt-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-                    <Utensils className="w-6 h-6 text-orange-600" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">500+</div>
-                    <div className="text-sm text-gray-500">Dishes</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-                    <Star className="w-6 h-6 text-red-600" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">4.9</div>
-                    <div className="text-sm text-gray-500">Rating</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                    <Truck className="w-6 h-6 text-green-600" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">30min</div>
-                    <div className="text-sm text-gray-500">Delivery</div>
-                  </div>
-                </div>
-              </div>
+        <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div className="space-y-8 animate-fade-in-up">
+            <div className="inline-flex items-center gap-2 rounded-full border border-orange-200/70 bg-white/75 px-4 py-2 text-sm font-semibold text-gray-700 backdrop-blur">
+              <Sparkles className="h-4 w-4 text-primary" />
+              Live delivery now in Addis Ababa
             </div>
 
-            {/* Hero Image */}
-            <div className="relative hidden lg:block animate-fade-in" style={{ animationDelay: '0.3s' }}>
-              <div className="relative w-full aspect-square">
-                {/* Decorative circles */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-orange-300 to-red-400 rounded-[40%_60%_70%_30%/60%_30%_70%_40%] animate-pulse-glow" />
-                <div className="absolute inset-4 bg-white rounded-[40%_60%_70%_30%/60%_30%_70%_40%] overflow-hidden shadow-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-orange-100 to-red-50 flex items-center justify-center">
-                    <div className="text-center">
-                      <span className="text-8xl">🍕</span>
-                      <p className="mt-4 text-2xl font-bold text-gray-700">Delicious Food</p>
-                      <p className="text-gray-500">Fresh & Hot</p>
-                    </div>
+            <h1 className="text-4xl font-black leading-tight text-gray-900 md:text-5xl lg:text-6xl">
+              Restaurant quality meals,
+              <span className="text-gradient"> delivered while still hot.</span>
+            </h1>
+
+            <p className="max-w-xl text-lg text-gray-600 md:text-xl">
+              Skip long waits and boring menus. Explore curated local favorites, order in seconds, and get fast doorstep delivery with live status updates.
+            </p>
+
+            <div className="flex flex-wrap gap-4">
+              <Link href="/menu">
+                <Button size="xl" className="bg-gradient-primary px-9 text-white hover:shadow-glow-lg">
+                  Start Your Order
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/about">
+                <Button size="xl" variant="outline" className="border-white bg-white/70 px-9 hover:bg-white">
+                  Why FoodExpress
+                </Button>
+              </Link>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="surface-panel p-4">
+                <p className="text-2xl font-black text-gray-900">500+</p>
+                <p className="text-sm text-gray-500">curated dishes</p>
+              </div>
+              <div className="surface-panel p-4">
+                <p className="text-2xl font-black text-gray-900">4.9/5</p>
+                <p className="text-sm text-gray-500">customer rating</p>
+              </div>
+              <div className="surface-panel p-4">
+                <p className="text-2xl font-black text-gray-900">30 min</p>
+                <p className="text-sm text-gray-500">average delivery</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="surface-panel relative overflow-hidden p-6 animate-fade-in-up md:p-7" style={{ animationDelay: '0.2s' }}>
+            <div className="absolute -right-16 -top-20 h-44 w-44 rounded-full bg-orange-200/55 blur-2xl" />
+            <div className="relative space-y-5">
+              <div className="rounded-2xl bg-gradient-to-br from-orange-100 to-rose-100 p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-600">Tonight&apos;s top pick</p>
+                    <h3 className="mt-1 text-xl font-black text-gray-900">Flame Grilled Chicken Bowl</h3>
+                    <p className="mt-2 text-sm text-gray-500">Spiced rice, roasted vegetables, and chili-lime sauce.</p>
+                  </div>
+                  <div className="rounded-2xl bg-white px-3 py-2 text-right shadow-sm">
+                    <p className="text-xs text-gray-500">from</p>
+                    <p className="text-lg font-black text-primary">ETB 390</p>
                   </div>
                 </div>
-                
-                {/* Floating badges */}
-                <div className="absolute -top-4 -right-4 bg-white rounded-2xl shadow-xl p-4 animate-bounce-in">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                      <Shield className="w-5 h-5 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold">Safe Delivery</p>
-                      <p className="text-xs text-gray-500">Contactless</p>
-                    </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-2xl border border-orange-100 bg-white p-4">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700">
+                    <Truck className="h-4 w-4 text-primary" />
+                    Rider is nearby
                   </div>
+                  <p className="text-sm text-gray-500">Current average delivery time for your area is <strong className="text-gray-900">24-32 min</strong>.</p>
                 </div>
-                
-                <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl p-4 animate-bounce-in" style={{ animationDelay: '0.2s' }}>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                      <Clock className="w-5 h-5 text-orange-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold">Fast Delivery</p>
-                      <p className="text-xs text-gray-500">Within 30 mins</p>
-                    </div>
+                <div className="rounded-2xl border border-orange-100 bg-white p-4">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-700">
+                    <ShieldCheck className="h-4 w-4 text-green-600" />
+                    Safe handoff
                   </div>
+                  <p className="text-sm text-gray-500">Contactless drop-off enabled by default for every order.</p>
+                </div>
+              </div>
+
+              <div className="rounded-2xl bg-gray-900 p-4 text-white">
+                <p className="text-xs uppercase tracking-[0.15em] text-white/60">What people say</p>
+                <p className="mt-2 text-sm text-white/85">&ldquo;Food arrived hot, packaging was clean, and delivery was way faster than expected.&rdquo;</p>
+                <div className="mt-3 flex items-center gap-2 text-orange-300">
+                  <Star className="h-4 w-4 fill-current" />
+                  <Star className="h-4 w-4 fill-current" />
+                  <Star className="h-4 w-4 fill-current" />
+                  <Star className="h-4 w-4 fill-current" />
+                  <Star className="h-4 w-4 fill-current" />
                 </div>
               </div>
             </div>
@@ -128,104 +110,110 @@ export default function HomePage() {
       </section>
 
       {/* Featured Menu */}
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold mb-2">Featured Items</h2>
-              <p className="text-gray-500">Discover our most popular dishes</p>
-            </div>
-            <Link href="/menu">
-              <Button variant="ghost" className="group">
-                View All
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
+      <section>
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">Featured menu</p>
+            <h2 className="text-3xl font-black text-gray-900">Most loved this week</h2>
+            <p className="mt-1 text-gray-500">Top-rated dishes customers keep coming back for.</p>
           </div>
-          <FoodList limit={6} featured />
+          <Link href="/menu">
+            <Button variant="ghost" className="group rounded-full bg-white/70 px-4">
+              View All
+              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Button>
+          </Link>
         </div>
+        <FoodList limit={6} featured />
       </section>
 
       {/* How It Works */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-orange-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">How It Works</h2>
-            <p className="text-gray-500 max-w-xl mx-auto">Ordering your favorite food has never been easier. Follow these simple steps!</p>
+      <section className="surface-warm p-7 md:p-10">
+        <div className="mb-10 text-center">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary">How it works</p>
+          <h2 className="text-3xl font-black text-gray-900">From craving to checkout in three steps</h2>
+          <p className="mx-auto mt-2 max-w-2xl text-gray-500">Everything is optimized to get food from kitchen to your table quickly and reliably.</p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className="surface-panel group p-6">
+            <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-100 text-lg font-black text-primary">1</div>
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-50">
+              <Utensils className="h-7 w-7 text-primary" />
+            </div>
+            <h3 className="text-xl font-black text-gray-900">Pick your meal</h3>
+            <p className="mt-2 text-sm text-gray-500">Explore categories and discover chef-curated dishes with rich details and ratings.</p>
           </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Step 1 */}
-            <div className="relative group">
-              <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg z-10">
-                1
-              </div>
-              <div className="bg-white rounded-3xl p-8 pt-16 shadow-card hover:shadow-card-hover transition-all duration-300 group-hover:-translate-y-2">
-                <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Utensils className="w-8 h-8 text-orange-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-center">Browse Menu</h3>
-                <p className="text-gray-500 text-center">Explore our delicious selection of dishes from local favorites to chef specials</p>
-              </div>
+
+          <div className="surface-panel group p-6">
+            <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-lg font-black text-rose-600">2</div>
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50">
+              <HandPlatter className="h-7 w-7 text-rose-600" />
             </div>
-            
-            {/* Step 2 */}
-            <div className="relative group">
-              <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg z-10">
-                2
-              </div>
-              <div className="bg-white rounded-3xl p-8 pt-16 shadow-card hover:shadow-card-hover transition-all duration-300 group-hover:-translate-y-2">
-                <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Truck className="w-8 h-8 text-red-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-center">Place Order</h3>
-                <p className="text-gray-500 text-center">Add items to cart and checkout with your preferred payment method</p>
-              </div>
-            </div>
-            
-            {/* Step 3 */}
-            <div className="relative group">
-              <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg z-10">
-                3
-              </div>
-              <div className="bg-white rounded-3xl p-8 pt-16 shadow-card hover:shadow-card-hover transition-all duration-300 group-hover:-translate-y-2">
-                <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Star className="w-8 h-8 text-green-600" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-center">Enjoy Food</h3>
-                <p className="text-gray-500 text-center">Fast delivery to your location. Enjoy your meal hot and fresh!</p>
-              </div>
-            </div>
+            <h3 className="text-xl font-black text-gray-900">Confirm instantly</h3>
+            <p className="mt-2 text-sm text-gray-500">Add to cart, set delivery details, and complete payment in a frictionless flow.</p>
           </div>
+
+          <div className="surface-panel group p-6">
+            <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-lg font-black text-green-600">3</div>
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-green-50">
+              <Clock className="h-7 w-7 text-green-600" />
+            </div>
+            <h3 className="text-xl font-black text-gray-900">Track and enjoy</h3>
+            <p className="mt-2 text-sm text-gray-500">Follow your order in real time and receive hot meals delivered with care.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Strip */}
+      <section className="grid gap-4 rounded-3xl bg-gray-900 p-6 text-white md:grid-cols-3 md:p-8">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="mb-2 inline-flex rounded-lg bg-white/10 p-2">
+            <Truck className="h-5 w-5 text-orange-300" />
+          </div>
+          <h3 className="text-lg font-bold">Fast dispatch</h3>
+          <p className="mt-1 text-sm text-white/70">Orders are picked up immediately by nearby riders.</p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="mb-2 inline-flex rounded-lg bg-white/10 p-2">
+            <ShieldCheck className="h-5 w-5 text-orange-300" />
+          </div>
+          <h3 className="text-lg font-bold">Trusted hygiene</h3>
+          <p className="mt-1 text-sm text-white/70">Partner kitchens follow strict prep and packaging standards.</p>
+        </div>
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <div className="mb-2 inline-flex rounded-lg bg-white/10 p-2">
+            <Star className="h-5 w-5 text-orange-300" />
+          </div>
+          <h3 className="text-lg font-bold">Loved by locals</h3>
+          <p className="mt-1 text-sm text-white/70">Thousands of weekly orders with consistent five-star feedback.</p>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="bg-gradient-to-r from-food-orange to-food-red rounded-3xl p-8 md:p-12 text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2" />
-            
-            <div className="relative z-10 max-w-2xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Hungry? Order Now!
-              </h2>
-              <p className="text-white/80 text-lg mb-8">
-                Get the best local food delivered to your doorstep. Download our app or order online now!
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <Link href="/menu">
-                  <Button size="xl" variant="secondary" className="bg-white text-food-orange hover:bg-gray-100">
-                    Order Online
-                  </Button>
-                </Link>
-                <Link href="/contact">
-                  <Button size="xl" variant="outline" className="border-2 border-white text-white hover:bg-white/10">
-                    Contact Us
-                  </Button>
-                </Link>
-              </div>
+      <section>
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-food-orange to-food-red p-8 text-center md:p-12">
+          <div className="absolute right-0 top-0 h-64 w-64 translate-x-1/2 -translate-y-1/2 rounded-full bg-white/10" />
+          <div className="absolute bottom-0 left-0 h-48 w-48 -translate-x-1/2 translate-y-1/2 rounded-full bg-white/10" />
+
+          <div className="relative z-10 mx-auto max-w-2xl">
+            <h2 className="text-3xl font-black text-white md:text-4xl">
+              Hungry right now?
+            </h2>
+            <p className="mb-8 mt-3 text-lg text-white/85">
+              Open the menu, pick what you love, and let us handle the rest.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link href="/menu">
+                <Button size="xl" variant="secondary" className="bg-white text-food-orange hover:bg-orange-50">
+                  Browse Menu
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button size="xl" variant="outline" className="border-2 border-white text-white hover:bg-white/10">
+                  Contact Team
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

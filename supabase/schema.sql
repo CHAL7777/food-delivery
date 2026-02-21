@@ -1,6 +1,10 @@
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+-- NOTE:
+-- This file is intended for initializing a fresh/empty database.
+-- For existing Supabase projects, use `supabase/fix_auth_signup.sql` instead.
+
 -- =====================================================
 -- PROFILES TABLE (extends auth.users)
 -- =====================================================

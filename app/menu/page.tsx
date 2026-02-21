@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import FoodList from '@/components/food/FoodList'
 import { Input } from '@/components/ui/Input'
-import { Search, ChefHat, Utensils, Coffee, Pizza, Dessert } from 'lucide-react'
+import { Search, ChefHat, Utensils, Coffee, Pizza, Dessert, Sparkles } from 'lucide-react'
 
 const categories = [
   { id: 'all', name: 'All', icon: ChefHat },
@@ -18,25 +18,29 @@ export default function MenuPage() {
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-9">
       {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl md:text-4xl font-bold mb-3">Our Menu</h1>
-        <p className="text-gray-500 max-w-xl mx-auto">
-          Explore our delicious selection of dishes crafted by our expert chefs
+      <div className="surface-warm p-6 text-center md:p-9">
+        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-orange-200/70 bg-white/80 px-4 py-2 text-sm font-semibold text-gray-700">
+          <Sparkles className="h-4 w-4 text-primary" />
+          Freshly curated every day
+        </div>
+        <h1 className="mt-4 text-4xl font-black text-gray-900 md:text-5xl">Our Menu</h1>
+        <p className="mx-auto mt-3 max-w-2xl text-gray-500">
+          Explore bold flavors, chef specials, and comfort favorites made for quick delivery.
         </p>
       </div>
 
       {/* Search Bar */}
-      <div className="max-w-xl mx-auto">
+      <div className="mx-auto max-w-2xl">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
           <Input
             type="text"
-            placeholder="Search for dishes..."
+            placeholder="Search dishes, e.g. pizza, pasta, burger..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 h-12 text-lg"
+            className="h-14 rounded-2xl border-white bg-white/80 pl-12 text-base shadow-card"
           />
         </div>
       </div>
@@ -46,18 +50,18 @@ export default function MenuPage() {
         {categories.map((category) => {
           const Icon = category.icon
           const isActive = selectedCategory === category.id
-          
+
           return (
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium transition-all duration-300 ${
+              className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-300 ${
                 isActive
                   ? 'bg-gradient-primary text-white shadow-glow'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 shadow-card hover:shadow-card-hover'
+                  : 'bg-white/85 text-gray-600 shadow-card hover:-translate-y-0.5 hover:bg-orange-50 hover:text-primary'
               }`}
             >
-              <Icon className="w-5 h-5" />
+              <Icon className="h-5 w-5" />
               {category.name}
             </button>
           )
@@ -65,8 +69,10 @@ export default function MenuPage() {
       </div>
 
       {/* Food List */}
-      <FoodList category={selectedCategory === 'all' ? undefined : selectedCategory} />
+      <FoodList
+        category={selectedCategory === 'all' ? undefined : selectedCategory}
+        searchQuery={searchQuery}
+      />
     </div>
   )
 }
-

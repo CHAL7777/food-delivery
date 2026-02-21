@@ -3,15 +3,16 @@
 import { useEffect, useState } from 'react'
 import FoodCard from './FoodCard'
 import { Food } from '@/types/food'
-import { LoadingSpinner, LoadingCard } from '@/components/ui/LoadingSpinner'
+import { LoadingCard } from '@/components/ui/LoadingSpinner'
 
 interface FoodListProps {
   limit?: number
   category?: string
   featured?: boolean
+  searchQuery?: string
 }
 
-export default function FoodList({ limit, category, featured }: FoodListProps) {
+export default function FoodList({ limit, category, featured, searchQuery }: FoodListProps) {
   const [foods, setFoods] = useState<Food[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -26,6 +27,7 @@ export default function FoodList({ limit, category, featured }: FoodListProps) {
         if (limit) params.append('limit', limit.toString())
         if (category) params.append('category', category)
         if (featured) params.append('featured', 'true')
+        if (searchQuery?.trim()) params.append('search', searchQuery.trim())
         
         if (params.toString()) {
           url += `?${params.toString()}`
@@ -45,7 +47,7 @@ export default function FoodList({ limit, category, featured }: FoodListProps) {
     }
 
     fetchFoods()
-  }, [limit, category, featured])
+  }, [limit, category, featured, searchQuery])
 
   if (loading) {
     return (
@@ -72,7 +74,9 @@ export default function FoodList({ limit, category, featured }: FoodListProps) {
         <span className="text-4xl">🍽️</span>
       </div>
       <p className="text-gray-600 font-medium text-lg">No foods found</p>
-      <p className="text-gray-400 text-sm mt-1">Check back later for new dishes!</p>
+      <p className="text-gray-400 text-sm mt-1">
+        {searchQuery?.trim() ? `No results for "${searchQuery.trim()}".` : 'Check back later for new dishes!'}
+      </p>
     </div>
   )
 
