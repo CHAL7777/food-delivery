@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useAuthStore } from '@/store/authStore'
+import { supabase } from '@/lib/supabase'
 import toast from 'react-hot-toast'
 import { Mail, Lock, ChefHat, ArrowRight } from 'lucide-react'
 
@@ -17,6 +18,8 @@ function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [resending, setResending] = useState(false)
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false)
   
   const { signIn } = useAuthStore()
 
@@ -26,13 +29,47 @@ function LoginForm() {
     try {
       setLoading(true)
       await signIn(email, password)
+      setNeedsEmailConfirmation(false)
       toast.success('Logged in successfully!')
       router.push(redirect)
     } catch (error) {
       const message = (error as any)?.message || (error as any)?.error_description || 'Invalid email or password'
+      const unconfirmedEmail = /email not confirmed/i.test(message)
+      setNeedsEmailConfirmation(unconfirmedEmail)
+      if (unconfirmedEmail) {
+        toast.error('Email not confirmed. Check your inbox, or resend the confirmation email below.')
+        return
+      }
       toast.error(message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleResendConfirmation = async () => {
+    if (!email) {
+      toast.error('Enter your email first')
+      return
+    }
+
+    try {
+      setResending(true)
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`
+        }
+      })
+
+      if (error) {
+        toast.error(error.message || 'Failed to resend confirmation email')
+        return
+      }
+
+      toast.success('Confirmation email sent. Please check your inbox/spam folder.')
+    } finally {
+      setResending(false)
     }
   }
 
@@ -95,6 +132,17 @@ function LoginForm() {
               </Link>
             </div>
 
+            {needsEmailConfirmation && (
+              <button
+                type="button"
+                onClick={handleResendConfirmation}
+                disabled={resending}
+                className="text-sm font-medium text-primary hover:underline disabled:opacity-50"
+              >
+                {resending ? 'Resending confirmation...' : 'Resend confirmation email'}
+              </button>
+            )}
+
             <Button
               type="submit"
               className="w-full bg-gradient-primary hover:shadow-glow"
@@ -146,4 +194,3 @@ export default function LoginPage() {
     </Suspense>
   )
 }
-
