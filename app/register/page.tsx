@@ -44,37 +44,14 @@ export default function RegisterPage() {
 
     try {
       setLoading(true)
-        const user = await signUp(formData.email, formData.password, {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phone: formData.phone
-        })
+      await signUp(formData.email, formData.password, {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone
+      })
 
-        // Create profile via server-side Prisma API
-        if (user?.id) {
-          try {
-            const res = await fetch('/api/profiles', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                id: user.id,
-                email: formData.email,
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                phone: formData.phone
-              })
-            })
-
-            if (!res.ok) {
-              console.warn('Profile creation failed, but account was created')
-            }
-          } catch (profileError) {
-            console.warn('Profile creation failed:', profileError)
-          }
-        }
-
-        toast.success('Account created successfully! Please check your email to verify your account.')
-        router.push('/login')
+      toast.success('Account created successfully! Please check your email to verify your account.')
+      router.push('/login')
     } catch (error) {
         const message = (error as any)?.message || (error as any)?.error_description || 'Failed to create account'
         toast.error(message)

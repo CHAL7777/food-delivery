@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { type User as SupabaseAuthUser } from '@supabase/supabase-js'
+import { type Subscription, type User as SupabaseAuthUser } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { User as AppUser } from '@/types/user'
 
@@ -24,6 +24,8 @@ interface AuthStore {
   signOut: () => Promise<void>
   initialize: () => Promise<void>
 }
+
+let authStateSubscription: Subscription | null = null
 
 const getMetadataValue = (authUser: SupabaseAuthUser, keys: string[]): string | undefined => {
   const metadata = (authUser.user_metadata || {}) as Record<string, unknown>
@@ -68,21 +70,38 @@ const fetchProfile = async (userId: string): Promise<ProfileRow | null> => {
 }
 
 const profilePayloadFromAuthUser = (authUser: SupabaseAuthUser) => ({
-  id: authUser.id,
-  email: authUser.email,
   firstName: getMetadataValue(authUser, ['firstName', 'first_name']),
   lastName: getMetadataValue(authUser, ['lastName', 'last_name']),
   phone: getMetadataValue(authUser, ['phone'])
 })
+
+const getCurrentAccessToken = async (): Promise<string | null> => {
+  const { data } = await supabase.auth.getSession()
+  return data.session?.access_token || null
+}
+
+const getAppOrigin = (): string => {
+  if (typeof window !== 'undefined') return window.location.origin
+  return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+}
 
 const ensureProfile = async (authUser: SupabaseAuthUser): Promise<ProfileRow | null> => {
   const existingProfile = await fetchProfile(authUser.id)
   if (existingProfile) return existingProfile
 
   try {
+    const accessToken = await getCurrentAccessToken()
+    if (!accessToken) {
+      console.warn('Profile bootstrap skipped: no access token')
+      return null
+    }
+
     const response = await fetch('/api/profiles', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`
+      },
       body: JSON.stringify(profilePayloadFromAuthUser(authUser))
     })
 
@@ -133,16 +152,17 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
   signUp: async (email, password, userData) => {
     const metadata = {
-      ...userData,
-      first_name: userData.firstName,
-      last_name: userData.lastName
+      first_name: userData.firstName?.trim() || undefined,
+      last_name: userData.lastName?.trim() || undefined,
+      phone: userData.phone?.trim() || undefined
     }
 
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: metadata
+        data: metadata,
+        emailRedirectTo: `${getAppOrigin()}/login`
       }
     })
 
@@ -178,14 +198,18 @@ export const useAuthStore = create<AuthStore>((set) => ({
       set({ loading: false })
     }
 
-    // Listen for auth changes
-    supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
-        const profile = await ensureProfile(session.user)
-        set({ user: mergeAuthUser(session.user, profile) })
-      } else {
-        set({ user: null })
-      }
-    })
+    // Listen for auth changes once for the app lifecycle.
+    if (!authStateSubscription) {
+      const { data } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
+        if (nextSession?.user) {
+          const profile = await ensureProfile(nextSession.user)
+          set({ user: mergeAuthUser(nextSession.user, profile), loading: false })
+        } else {
+          set({ user: null, loading: false })
+        }
+      })
+
+      authStateSubscription = data.subscription
+    }
   }
 }))

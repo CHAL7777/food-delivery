@@ -357,6 +357,8 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
+  -- Never trust role from user metadata.
+  -- Promote admins manually from SQL by updating profiles.role.
   INSERT INTO public.profiles (id, email, first_name, last_name, phone, role)
   VALUES (
     NEW.id,
@@ -364,18 +366,14 @@ BEGIN
     COALESCE(NEW.raw_user_meta_data->>'first_name', NEW.raw_user_meta_data->>'firstName'),
     COALESCE(NEW.raw_user_meta_data->>'last_name', NEW.raw_user_meta_data->>'lastName'),
     NEW.raw_user_meta_data->>'phone',
-    CASE
-      WHEN NEW.raw_user_meta_data->>'role' IN ('user', 'admin') THEN NEW.raw_user_meta_data->>'role'
-      ELSE 'user'
-    END
+    'user'
   )
   ON CONFLICT (id) DO UPDATE
   SET
     email = EXCLUDED.email,
     first_name = COALESCE(EXCLUDED.first_name, public.profiles.first_name),
     last_name = COALESCE(EXCLUDED.last_name, public.profiles.last_name),
-    phone = COALESCE(EXCLUDED.phone, public.profiles.phone),
-    role = COALESCE(EXCLUDED.role, public.profiles.role);
+    phone = COALESCE(EXCLUDED.phone, public.profiles.phone);
 
   RETURN NEW;
 END;
