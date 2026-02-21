@@ -7,12 +7,16 @@ interface ProfileRow {
   id: string
   email: string
   first_name?: string | null
+  firstName?: string | null
   last_name?: string | null
+  lastName?: string | null
   phone?: string | null
   role?: AppUser['role'] | null
   avatar?: string | null
   created_at?: string | null
+  createdAt?: string | null
   updated_at?: string | null
+  updatedAt?: string | null
 }
 
 interface AuthStore {
@@ -44,13 +48,13 @@ const normalizeProfile = (profile: ProfileRow | null): Partial<AppUser> => {
   return {
     id: profile.id,
     email: profile.email,
-    firstName: profile.first_name ?? undefined,
-    lastName: profile.last_name ?? undefined,
+    firstName: profile.first_name ?? profile.firstName ?? undefined,
+    lastName: profile.last_name ?? profile.lastName ?? undefined,
     phone: profile.phone ?? undefined,
     role: profile.role ?? 'user',
     avatar: profile.avatar ?? undefined,
-    createdAt: profile.created_at ?? undefined,
-    updatedAt: profile.updated_at ?? undefined
+    createdAt: profile.created_at ?? profile.createdAt ?? undefined,
+    updatedAt: profile.updated_at ?? profile.updatedAt ?? undefined
   }
 }
 
@@ -85,12 +89,15 @@ const getAppOrigin = (): string => {
   return process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
 }
 
-const ensureProfile = async (authUser: SupabaseAuthUser): Promise<ProfileRow | null> => {
+const ensureProfile = async (
+  authUser: SupabaseAuthUser,
+  accessTokenInput?: string | null
+): Promise<ProfileRow | null> => {
   const existingProfile = await fetchProfile(authUser.id)
   if (existingProfile) return existingProfile
 
   try {
-    const accessToken = await getCurrentAccessToken()
+    const accessToken = accessTokenInput ?? (await getCurrentAccessToken())
     if (!accessToken) {
       console.warn('Profile bootstrap skipped: no access token')
       return null
@@ -109,12 +116,13 @@ const ensureProfile = async (authUser: SupabaseAuthUser): Promise<ProfileRow | n
       console.warn('Profile bootstrap failed with status:', response.status)
       return null
     }
+
+    const payload = (await response.json()) as ProfileRow
+    return payload
   } catch (error) {
     console.warn('Profile bootstrap request failed:', error)
     return null
   }
-
-  return await fetchProfile(authUser.id)
 }
 
 const mergeAuthUser = (authUser: SupabaseAuthUser, profile: ProfileRow | null): AppUser => {
@@ -145,7 +153,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     if (error) throw error
 
     if (data.user) {
-      const profile = await ensureProfile(data.user)
+      const profile = await ensureProfile(data.user, data.session?.access_token)
       set({ user: mergeAuthUser(data.user, profile) })
     }
   },
@@ -188,7 +196,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     const { data: { session } } = await supabase.auth.getSession()
     
     if (session?.user) {
-      const profile = await ensureProfile(session.user)
+      const profile = await ensureProfile(session.user, session.access_token)
 
       set({ 
         user: mergeAuthUser(session.user, profile),
@@ -202,7 +210,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     if (!authStateSubscription) {
       const { data } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
         if (nextSession?.user) {
-          const profile = await ensureProfile(nextSession.user)
+          const profile = await ensureProfile(nextSession.user, nextSession.access_token)
           set({ user: mergeAuthUser(nextSession.user, profile), loading: false })
         } else {
           set({ user: null, loading: false })
