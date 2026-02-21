@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import prisma from '@/lib/prisma'
 import { z } from 'zod'
@@ -18,6 +19,30 @@ const foodSchema = z.object({
   is_spicy: z.boolean().default(false),
   preparation_time: z.number().positive().optional()
 })
+
+async function getAuthenticatedUser(request: Request) {
+  const authHeader = request.headers.get('authorization') || ''
+  const token = authHeader.toLowerCase().startsWith('bearer ')
+    ? authHeader.slice(7).trim()
+    : null
+
+  if (token) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (supabaseUrl && supabaseAnonKey) {
+      const authClient = createClient(supabaseUrl, supabaseAnonKey)
+      const { data, error } = await authClient.auth.getUser(token)
+      if (!error && data.user) return data.user
+    }
+  }
+
+  const authClient = await createServerSupabaseClient()
+  const { data, error } = await authClient.auth.getUser()
+  if (error || !data.user) return null
+
+  return data.user
+}
 
 export async function GET(request: Request) {
   try {
@@ -78,9 +103,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    // Auth client (uses cookies) to identify user
-    const authClient = await createServerSupabaseClient()
-    const { data: { user } } = await authClient.auth.getUser()
+    const user = await getAuthenticatedUser(request)
     if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized' },

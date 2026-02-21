@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { supabase } from '@/lib/supabase'
 import { Category } from '@/types/food'
 import toast from 'react-hot-toast'
 
@@ -32,6 +33,7 @@ export default function AddFoodPage() {
   const fetchCategories = async () => {
     try {
       const response = await fetch('/api/categories')
+      if (!response.ok) throw new Error('Failed to fetch categories')
       const data = await response.json()
       setCategories(data)
     } catch (error) {
@@ -44,9 +46,15 @@ export default function AddFoodPage() {
     setLoading(true)
 
     try {
+      const { data } = await supabase.auth.getSession()
+      const accessToken = data.session?.access_token
+
       const response = await fetch('/api/foods', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {})
+        },
         body: JSON.stringify({
           ...formData,
           price: parseFloat(formData.price),

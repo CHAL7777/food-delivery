@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { supabase } from '@/lib/supabase'
 import { Food } from '@/types/food'
 import { Plus, Edit, Trash2, Search, X, ImageIcon, ChevronUp, ChevronDown, Check, X as XIcon } from 'lucide-react'
 import Link from 'next/link'
@@ -30,6 +31,16 @@ export default function AdminFoodsPage() {
     fetchFoods()
   }, [])
 
+  const getAuthHeaders = async () => {
+    const { data } = await supabase.auth.getSession()
+    const accessToken = data.session?.access_token
+    const headers: Record<string, string> = {}
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`
+    }
+    return headers
+  }
+
   const fetchFoods = async () => {
     try {
       const response = await fetch('/api/foods?available=false')
@@ -51,8 +62,10 @@ export default function AdminFoodsPage() {
     if (!confirm('Are you sure you want to delete this food?')) return
 
     try {
+      const authHeaders = await getAuthHeaders()
       const response = await fetch(`/api/foods/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: authHeaders
       })
 
       if (!response.ok) throw new Error('Failed to delete')
@@ -71,9 +84,13 @@ export default function AdminFoodsPage() {
 
   const handleToggleAvailability = async (id: string, currentStatus: boolean) => {
     try {
+      const authHeaders = await getAuthHeaders()
       const response = await fetch(`/api/foods/${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders
+        },
         body: JSON.stringify({ isAvailable: !currentStatus })
       })
 
@@ -91,10 +108,17 @@ export default function AdminFoodsPage() {
     if (!confirm(`Are you sure you want to delete ${selectedFoods.size} food(s)?`)) return
 
     try {
+      const authHeaders = await getAuthHeaders()
       const deletePromises = Array.from(selectedFoods).map(id => 
-        fetch(`/api/foods/${id}`, { method: 'DELETE' })
+        fetch(`/api/foods/${id}`, {
+          method: 'DELETE',
+          headers: authHeaders
+        })
       )
-      await Promise.all(deletePromises)
+      const responses = await Promise.all(deletePromises)
+
+      const hasFailure = responses.some((response) => !response.ok)
+      if (hasFailure) throw new Error('One or more deletes failed')
       
       toast.success(`${selectedFoods.size} foods deleted successfully`)
       setSelectedFoods(new Set())
@@ -505,4 +529,3 @@ export default function AdminFoodsPage() {
     </div>
   )
 }
-
