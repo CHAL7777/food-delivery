@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useAuthStore } from '@/store/authStore'
+import { supabase } from '@/lib/supabase'
 import { Order } from '@/types/order'
 import { formatPrice } from '@/lib/utils'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -9,19 +10,32 @@ import { Button } from '@/components/ui/Button'
 import Link from 'next/link'
 
 export default function OrdersPage() {
-  const { user } = useAuthStore()
+  const { user, loading: authLoading, initialize } = useAuthStore()
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    initialize()
+  }, [initialize])
 
   useEffect(() => {
     const fetchOrders = async () => {
       if (!user) return
 
       try {
-        const response = await fetch('/api/orders')
+        const { data: { session } } = await supabase.auth.getSession()
+        const accessToken = session?.access_token
+        const response = await fetch('/api/orders', {
+          headers: accessToken
+            ? { Authorization: `Bearer ${accessToken}` }
+            : undefined
+        })
+
         if (response.ok) {
           const data = await response.json()
           setOrders(data)
+        } else if (response.status === 401) {
+          setOrders([])
         }
       } catch (error) {
         console.error('Error fetching orders:', error)
@@ -32,6 +46,8 @@ export default function OrdersPage() {
 
     fetchOrders()
   }, [user])
+
+  if (authLoading) return <LoadingSpinner />
 
   if (!user) {
     return (
