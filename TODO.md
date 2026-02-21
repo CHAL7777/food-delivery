@@ -1,19 +1,26 @@
-# TODO: Upgrade UI of About and Contact Pages
+# TODO: Fix Database Error Saving New User
+
+## Issue
+Database error when creating a new user account - "create account not working"
+
+## Root Cause
+Schema mismatch between Prisma and Supabase:
+- Supabase expects `profiles.id` to reference `auth.users(id)` (foreign key)
+- Prisma has `@default(uuid())` which tries to auto-generate ID, violating the FK constraint
 
 ## Plan
 
-### 1. Upgrade About Page (`app/about/page.tsx`)
-- [x] Add hero section with gradient background and decorative elements
-- [x] Add mission/vision cards with icons
-- [x] Add "Why Choose Us" section with features
-- [x] Add stats section (similar to homepage)
-- [x] Add CTA section linking to menu
+### Step 1: Fix Prisma Schema
+- [ ] Remove `@default(uuid())` from Profile.id field in prisma/schema.prisma
+- [ ] Make id required but without auto-generation (Supabase handles this via trigger)
 
-### 2. Upgrade Contact Page (`app/contact/page.tsx`)
-- [x] Add hero section with title and description
-- [x] Split layout: contact info on left, form on right
-- [x] Add contact info cards with icons (phone, email, address, hours)
-- [x] Improve form styling with proper inputs, focus states
-- [x] Add map section placeholder
-- [x] Add social media links
+### Step 2: Add Direct Database URL
+- [ ] Add DIRECT_DATABASE_URL to .env for migrations (bypassing pgbouncer)
+
+### Step 3: Sync Database
+- [ ] Run prisma generate
+- [ ] Run prisma db push to sync schema
+
+### Step 4: Test Registration
+- [ ] Test creating a new account
 

@@ -11,10 +11,10 @@ datasource db {
 }
 
 model Profile {
-  id        String   @id @default(uuid()) @db.Uuid
+  id        String   @id @db.Uuid
   email     String   @unique
-  firstName String?
-  lastName  String?
+  firstName String?  @map("first_name")
+  lastName  String?  @map("last_name")
   phone     String?
   role      String   @default("user")
   avatar    String?
