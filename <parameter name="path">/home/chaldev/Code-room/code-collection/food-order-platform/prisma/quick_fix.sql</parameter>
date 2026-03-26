@@ -1,4 +1,0 @@
-
--- Run this in Supabase SQL Editor:
-
-ALTER TABLE profiles ALTER COLUMN id DROP DEFAULT;
